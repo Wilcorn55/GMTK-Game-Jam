@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     float moveSpeed = 10f;
     bool isFacingRight = false;
 
+    public Vector2 lastMortionVector;
     public float jumpPower = 4f;
     bool isJumping = false;
 
@@ -24,11 +25,15 @@ public class PlayerMovement : MonoBehaviour
         horizonalInput = Input.GetAxis("Horizontal");
         FlipSprite();
 
-        if(Input.GetButtonDown("Jump") && !isJumping)
+        
+
+        if (Input.GetButtonDown("Jump") && !isJumping)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpPower);
             isJumping = true;
         }
+
+
     }
 
     private void FixedUpdate()
