@@ -6,6 +6,7 @@ public class PlatformGrow : Interactable
 {
 
     //variables
+    [SerializeField] GameObject Platform;
 
     // Start is called before the first frame update
     void Start()
