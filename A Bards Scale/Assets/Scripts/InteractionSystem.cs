@@ -35,12 +35,12 @@ public class InteractionSystem : MonoBehaviour
         Collider2D collider = Physics2D.OverlapCircle(detectionPoint.position, basicDetectionRadius, detectionLayer);
         if (collider != null)
         {
-            Debug.Log("Object detected by OverlapCircle: " + collider.name);
+
             return true;
         }
         else
         {
-            Debug.Log("No object detected by OverlapCircle");
+
             return false;
         }
         
@@ -52,22 +52,21 @@ public class InteractionSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             inputSequence.Enqueue(KeyCode.LeftArrow);
-            Debug.Log("Left Triggered");
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             inputSequence.Enqueue(KeyCode.RightArrow);
-            Debug.Log("Right Combination Triggered");
+
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             inputSequence.Enqueue(KeyCode.UpArrow);
-            Debug.Log("Up Combination Triggered");
+
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             inputSequence.Enqueue(KeyCode.DownArrow);
-            Debug.Log("Down Combination Triggered");
+
         }
 
         // Reset the timer whenever a new key is pressed
