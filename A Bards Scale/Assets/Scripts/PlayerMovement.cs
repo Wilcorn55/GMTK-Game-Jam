@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float JumpSpeed;
     private BoxCollider2D boxCollider;
     
+    
 
     public Vector2 lastMortionVector;
 
