@@ -94,7 +94,10 @@ public class InteractionSystem : MonoBehaviour
         {
             Debug.Log("Move Combination Triggered");
             // Trigger platform movement
-            currentPlatform.StartMovement();
+            if (currentPlatform != null)
+            {
+                currentPlatform.StartMovement();  // Start movement for the current platform
+            }
         }
     }
 
@@ -118,13 +121,30 @@ public class InteractionSystem : MonoBehaviour
 
         if (hit.collider != null)
         {
-            Debug.Log("Platform detected: " + hit.collider.name);
-            currentPlatform = hit.collider.GetComponentInParent<MovingPlatform>();
+            MovingPlatform detectedPlatform = hit.collider.GetComponentInParent<MovingPlatform>();
+
+            if (detectedPlatform != null && detectedPlatform != currentPlatform)
+            {
+                // Stop the movement of the previous platform
+                if (currentPlatform != null)
+                {
+                    currentPlatform.StopMovement();
+                }
+
+                // Set the new current platform and clear the input sequence
+                currentPlatform = detectedPlatform;
+                inputSequence.Clear(); // Clear the input sequence
+            }
         }
         else
         {
-            Debug.Log("No platform detected");
-            currentPlatform = null;
+            // Stop the movement if no platform is detected
+            if (currentPlatform != null)
+            {
+                currentPlatform.StopMovement();
+                currentPlatform = null;
+                inputSequence.Clear(); // Clear the input sequence
+            }
         }
     }
 }
