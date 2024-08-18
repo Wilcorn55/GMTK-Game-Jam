@@ -7,6 +7,7 @@ public class InteractionSystem : MonoBehaviour
     public Transform detectionPoint;
     private const float basicDetectionRadius = 0.2f;
     public LayerMask detectionLayer;
+    public List<MovingPlatform> platforms;
 
     private Queue<KeyCode> inputSequence = new Queue<KeyCode>();
     private KeyCode[] growCombination = { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.DownArrow, KeyCode.UpArrow };
@@ -16,11 +17,13 @@ public class InteractionSystem : MonoBehaviour
     private float inputTimer;
 
     // Reference to the MovingPlatform script
-    public MovingPlatform movingPlatform;
+    private MovingPlatform currentPlatform;
 
     void Update()
     {
-        if (ObjectTrigger())
+        DetectPlatform();
+
+        if (currentPlatform != null && ObjectTrigger())
         {
             RegisterInput();
             CheckCombination();
@@ -29,7 +32,18 @@ public class InteractionSystem : MonoBehaviour
 
     bool ObjectTrigger()
     {
-        return Physics2D.OverlapCircle(detectionPoint.position, basicDetectionRadius, detectionLayer);
+        Collider2D collider = Physics2D.OverlapCircle(detectionPoint.position, basicDetectionRadius, detectionLayer);
+        if (collider != null)
+        {
+            Debug.Log("Object detected by OverlapCircle: " + collider.name);
+            return true;
+        }
+        else
+        {
+            Debug.Log("No object detected by OverlapCircle");
+            return false;
+        }
+        
     }
 
     void RegisterInput()
@@ -38,18 +52,22 @@ public class InteractionSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             inputSequence.Enqueue(KeyCode.LeftArrow);
+            Debug.Log("Left Triggered");
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             inputSequence.Enqueue(KeyCode.RightArrow);
+            Debug.Log("Right Combination Triggered");
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             inputSequence.Enqueue(KeyCode.UpArrow);
+            Debug.Log("Up Combination Triggered");
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             inputSequence.Enqueue(KeyCode.DownArrow);
+            Debug.Log("Down Combination Triggered");
         }
 
         // Reset the timer whenever a new key is pressed
@@ -76,7 +94,7 @@ public class InteractionSystem : MonoBehaviour
         {
             Debug.Log("Move Combination Triggered");
             // Trigger platform movement
-            movingPlatform.MoveToNextPoint();
+            currentPlatform.StartMovement();
         }
     }
 
@@ -93,4 +111,21 @@ public class InteractionSystem : MonoBehaviour
         }
         return true;
     }
+    void DetectPlatform()
+    {
+        // Perform a raycast to detect the platform
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, detectionLayer);
+
+        if (hit.collider != null)
+        {
+            Debug.Log("Platform detected: " + hit.collider.name);
+            currentPlatform = hit.collider.GetComponentInParent<MovingPlatform>();
+        }
+        else
+        {
+            Debug.Log("No platform detected");
+            currentPlatform = null;
+        }
+    }
 }
+
