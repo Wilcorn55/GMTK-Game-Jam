@@ -4,59 +4,68 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    float horizonalInput;
-    float moveSpeed = 10f;
-    bool isFacingRight = false;
+
+    private Rigidbody2D body;
+    [SerializeField]private LayerMask groundLayer;
+    [SerializeField] private float MovementSpeed;
+    [SerializeField] private float JumpSpeed;
+    private BoxCollider2D boxCollider;
+    
 
     public Vector2 lastMortionVector;
-    public float jumpPower = 4f;
-    bool isJumping = false;
 
-    Rigidbody2D rb;
+
+    private void Awake()
+    {
+        body = GetComponent<Rigidbody2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
+    }
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        horizonalInput = Input.GetAxis("Horizontal");
-        FlipSprite();
+        float horizontalInput = Input.GetAxis("Horizontal");
+        body.velocity = new Vector2(horizontalInput * MovementSpeed, body.velocity.y);
+        
+        if(horizontalInput > 0.01f) 
+        {
+            transform.localScale = Vector3.one;
+        }
+        else if(horizontalInput < -0.01f)
+        {
+            transform.localScale = new Vector3(-1,1,1);
+        }
+                
 
         
 
-        if (Input.GetButtonDown("Jump") && !isJumping)
+        if (Input.GetButtonDown("Jump") && isGrounded()) 
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpPower);
-            isJumping = true;
+            Jump();
         }
-
+        
 
     }
 
-    private void FixedUpdate()
+    private void Jump()
     {
-        rb.velocity = new Vector2(horizonalInput * moveSpeed, rb.velocity.y);
-    }
-
-    void FlipSprite() {
-
-        if (isFacingRight && horizonalInput < 0f || !isFacingRight && horizonalInput > 0f)
-        {
-
-            isFacingRight = !isFacingRight;
-            Vector3 ls = transform.localScale;
-            ls.x *= -1f;
-            transform.localScale = ls;
-
-        }
-
+        body.velocity = new Vector2(body.velocity.x, JumpSpeed);
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        isJumping = false;
+       
+    }
+
+    private bool isGrounded() 
+    {
+        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 0.1f, groundLayer);
+        return raycastHit.collider != null;
     }
 }

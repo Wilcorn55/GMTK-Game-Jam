@@ -31,7 +31,7 @@ public class PlatformInteractController : MonoBehaviour
 
     private void Interact()
     {
-        Vector2 position = rgbd2d.position + PlayerMovement.lastMortionVector * offsetDistance;
+       Vector2 position = rgbd2d.position + PlayerMovement.lastMortionVector * offsetDistance;
 
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(position, sizeOfBaseInteractableArea);
