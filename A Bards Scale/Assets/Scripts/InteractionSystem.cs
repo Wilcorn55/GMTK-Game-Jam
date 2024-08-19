@@ -10,7 +10,7 @@ public class InteractionSystem : MonoBehaviour
     public List<MovingPlatform> platforms;
 
     private Queue<KeyCode> inputSequence = new Queue<KeyCode>();
-    private KeyCode[] growCombination = { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.DownArrow, KeyCode.UpArrow };
+    private KeyCode[] elongateCombination = { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.DownArrow, KeyCode.UpArrow };
     private KeyCode[] moveCombination = { KeyCode.DownArrow, KeyCode.UpArrow, KeyCode.RightArrow, KeyCode.LeftArrow };
 
     private float inputTimeout = 2f;
@@ -18,6 +18,7 @@ public class InteractionSystem : MonoBehaviour
 
     // Reference to the MovingPlatform script
     private MovingPlatform currentPlatform;
+    
 
     void Update()
     {
@@ -76,7 +77,7 @@ public class InteractionSystem : MonoBehaviour
         }
 
         // Limit the size of the queue to the longest combination
-        if (inputSequence.Count > growCombination.Length)
+        if (inputSequence.Count > elongateCombination.Length)
         {
             inputSequence.Dequeue();
         }
@@ -84,10 +85,18 @@ public class InteractionSystem : MonoBehaviour
 
     void CheckCombination()
     {
-        if (CheckSequence(growCombination))
+        if (CheckSequence(elongateCombination))  // Add a new combination for elongation
         {
-            Debug.Log("Grow Combination Triggered");
-            // Call the method to grow the platform here
+            Debug.Log("Elongate Combination Triggered");
+            if (currentPlatform != null)
+            {
+                PlatformElongation elongationScript = currentPlatform.GetComponent<PlatformElongation>();
+                if (elongationScript != null)
+                {
+                    elongationScript.ElongatePlatform();
+                }
+            }
+
         }
         else if (CheckSequence(moveCombination))
         {
