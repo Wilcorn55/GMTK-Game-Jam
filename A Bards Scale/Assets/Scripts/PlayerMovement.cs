@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
 
     private Rigidbody2D body;
+    Animator animator;
     [SerializeField]private LayerMask groundLayer;
     [SerializeField] private float MovementSpeed;
     [SerializeField] private float JumpSpeed;
@@ -20,29 +21,30 @@ public class PlayerMovement : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        animator = GetComponent<Animator>();
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+
 
     // Update is called once per frame
     void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         body.velocity = new Vector2(horizontalInput * MovementSpeed, body.velocity.y);
-        
-        if(horizontalInput > 0.01f) 
-        {
-            transform.localScale = Vector3.one;
-        }
-        else if(horizontalInput < -0.01f)
-        {
-            transform.localScale = new Vector3(-1,1,1);
-        }
-                
 
+        Vector3 scale = transform.localScale;
+
+        if (horizontalInput > 0)
+        {
+            scale.x = Mathf.Abs(scale.x);  // Ensure the player is facing right
+        }
+        else if (horizontalInput < 0)
+        {
+            scale.x = -Mathf.Abs(scale.x);  // Ensure the player is facing left
+        }
+
+        transform.localScale = scale;  // Apply the new scale
+
+        animator.SetFloat("xVelocity", Mathf.Abs(body.velocity.x));
         
 
         if (Input.GetButtonDown("Jump") && isGrounded()) 
