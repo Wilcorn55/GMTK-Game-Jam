@@ -5,12 +5,18 @@ using UnityEngine;
 public class MovingPlatform : MonoBehaviour
 {
     
-    public List<Transform> points;
+    public Transform[] points;
     public Transform platform;
     int goalPoint = 0;
     public float moveSpeed = 2f;
 
     private bool shouldMove = false; // Flag to control when the platform should move
+
+    public bool isMoving
+    {
+        get { return shouldMove; }
+    }
+
 
 
     // Update is called once per frame
@@ -26,11 +32,13 @@ public class MovingPlatform : MonoBehaviour
 
     public void MoveToNextPoint()
     {
-        platform.position = Vector2.MoveTowards(platform.position, points[goalPoint].position, Time.deltaTime * moveSpeed);
+        if (points.Length == 0) return;
 
-        if (Vector2.Distance(platform.position, points[goalPoint].position) < 0.1f)
+        transform.position = Vector3.MoveTowards(transform.position, points[goalPoint].position, moveSpeed * Time.deltaTime);
+
+        if (Vector3.Distance(transform.position, points[goalPoint].position) < 0.1f)
         {
-            goalPoint = (goalPoint + 1) % points.Count;
+            goalPoint = (goalPoint + 1) % points.Length;
         }
     }
 

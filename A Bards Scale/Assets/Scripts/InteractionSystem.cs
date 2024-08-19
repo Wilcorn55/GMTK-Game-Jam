@@ -216,7 +216,7 @@ public class InteractionSystem : MonoBehaviour
             case InteractionType.Move:
                 return currentPlatform.isMoving;  
             case InteractionType.Grow:
-                return currentPlatform.GetComponent<GrowPlatform>()?.isGrowingOrShrinking ?? false;
+                return currentPlatform.GetComponent<GrowPlatform>()?.IsGrowingOrShrinking ?? false;
             case InteractionType.Destroy:
                 // Implement your destroy check logic here
                 return false;

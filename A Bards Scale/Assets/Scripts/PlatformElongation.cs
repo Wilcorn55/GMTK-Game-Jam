@@ -11,21 +11,20 @@ public class PlatformElongation : MonoBehaviour
 
     private int currentSegments = 0;   // Tracks how many segments have been added on each side
 
+    private bool isElongating = false; // Flag to indicate if elongation is in progress
+
+    public bool IsElongating
+    {
+        get { return isElongating; }
+    }
     public void ElongatePlatform()
     {
-        if (currentSegments < maxSegments)
+        if (currentSegments < maxSegments && !isElongating)
         {
-            // Spawn a new segment under the current platform for the right side
-            Vector3 initialPositionRight = transform.position;
-            Vector3 targetPositionRight = new Vector3(transform.position.x + segmentWidth * (currentSegments + 1), transform.position.y, transform.position.z);
-            StartCoroutine(MovePlatformSegment(initialPositionRight, targetPositionRight));
+            isElongating = true; // Set the flag when elongation starts
 
-            // Spawn a new segment under the current platform for the left side
-            Vector3 initialPositionLeft = transform.position;
-            Vector3 targetPositionLeft = new Vector3(transform.position.x - segmentWidth * (currentSegments + 1), transform.position.y, transform.position.z);
-            StartCoroutine(MovePlatformSegment(initialPositionLeft, targetPositionLeft));
-
-            currentSegments++;
+            // Start the elongation process for both sides
+            StartCoroutine(ElongateBothSides());
         }
     }
 
@@ -45,5 +44,23 @@ public class PlatformElongation : MonoBehaviour
 
         // Ensure the final position is exactly the target position
         newSegment.transform.position = targetPosition;
+    }
+    private IEnumerator ElongateBothSides()
+    {
+        // Spawn and move the right segment
+        Vector3 initialPositionRight = transform.position;
+        Vector3 targetPositionRight = new Vector3(transform.position.x + segmentWidth * (currentSegments + 1), transform.position.y, transform.position.z);
+        yield return StartCoroutine(MovePlatformSegment(initialPositionRight, targetPositionRight));
+
+        // Spawn and move the left segment
+        Vector3 initialPositionLeft = transform.position;
+        Vector3 targetPositionLeft = new Vector3(transform.position.x - segmentWidth * (currentSegments + 1), transform.position.y, transform.position.z);
+        yield return StartCoroutine(MovePlatformSegment(initialPositionLeft, targetPositionLeft));
+
+        // Increment the segment count after elongation is complete
+        currentSegments++;
+
+        // Clear the flag when elongation is done
+        isElongating = false;
     }
 }

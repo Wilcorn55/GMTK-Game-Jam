@@ -12,7 +12,13 @@ public class GrowPlatform : MonoBehaviour
 
     private Vector3 initialScale;        // To store the original scale of the platform
     private Coroutine growthCoroutine;
+
     private bool isGrowingOrShrinking = false;  // Flag to track if growth/shrink is in progress
+
+    public bool IsGrowingOrShrinking
+    {
+        get { return isGrowingOrShrinking; }
+    }
 
     void Start()
     {
@@ -36,69 +42,35 @@ public class GrowPlatform : MonoBehaviour
 
     private IEnumerator GrowAndShrinkOverTime()
     {
-        // Calculate the target scale
         Vector3 targetScale = initialScale + new Vector3(growthIncrement, growthIncrement, growthIncrement);
-
-        // Clamp the target scale to ensure it doesn't exceed the maxScale
         targetScale.x = Mathf.Min(targetScale.x, maxScale);
         targetScale.y = Mathf.Min(targetScale.y, maxScale);
         targetScale.z = Mathf.Min(targetScale.z, maxScale);
 
         float elapsedTime = 0f;
 
-        Debug.Log("Starting growth...");
-
-        // Grow the platform
         while (elapsedTime < growthDuration)
         {
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Mathf.Clamp01(elapsedTime / growthDuration));
             elapsedTime += Time.deltaTime;
 
-            // Check if the scale is close enough to the target to snap
-            if (Vector3.Distance(transform.localScale, targetScale) < closeEnoughThreshold)
-            {
-                transform.localScale = targetScale;
-                break;
-            }
-
-            yield return null; // Wait for the next frame
+            yield return null;
         }
 
-        // Ensure the final scale is exactly the target scale
         transform.localScale = targetScale;
-
-        Debug.Log("Growth complete. Waiting to shrink...");
-
-        // Wait for the specified delay before shrinking
         yield return new WaitForSeconds(shrinkDelay);
 
-        Debug.Log("Starting shrink...");
-
-        // Reset elapsedTime for shrinking
         elapsedTime = 0f;
 
-        // Shrink the platform back to the initial scale
         while (elapsedTime < growthDuration)
         {
             transform.localScale = Vector3.Lerp(transform.localScale, initialScale, Mathf.Clamp01(elapsedTime / growthDuration));
             elapsedTime += Time.deltaTime;
 
-            // Check if the scale is close enough to the initial to snap
-            if (Vector3.Distance(transform.localScale, initialScale) < closeEnoughThreshold)
-            {
-                transform.localScale = initialScale;
-                break;
-            }
-
             yield return null;
         }
 
-        // Ensure the platform returns to its original size
         transform.localScale = initialScale;
-
-        Debug.Log("Shrink complete. Platform returned to original size.");
-
-        // Reset the flag to allow another growth/shrink process
         isGrowingOrShrinking = false;
     }
 }
