@@ -12,39 +12,45 @@ public class InteractionSystem : MonoBehaviour
     private Queue<KeyCode> inputSequence = new Queue<KeyCode>();
     private KeyCode[] elongateCombination = { KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.DownArrow, KeyCode.UpArrow };
     private KeyCode[] moveCombination = { KeyCode.DownArrow, KeyCode.UpArrow, KeyCode.RightArrow, KeyCode.LeftArrow };
+    private KeyCode[] growCombination = { KeyCode.RightArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.UpArrow };
+    private KeyCode[] destroyCombination = { KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow };
 
     private float inputTimeout = 2f;
     private float inputTimer;
 
     // Reference to the MovingPlatform script
     private MovingPlatform currentPlatform;
-    
+    public GrowPlatform growPlatform;
+
+    private bool isInputProcessed = false;
+    private enum InteractionType { None, Grow, Move, Elongate, Destroy }
+    private InteractionType currentInteraction = InteractionType.None;
 
     void Update()
     {
         DetectPlatform();
 
-        if (currentPlatform != null && ObjectTrigger())
+        if (currentPlatform != null && ObjectTrigger() && !isInputProcessed)
         {
             RegisterInput();
-            CheckCombination();
+            if (inputSequence.Count > 0)
+            {
+                StartCoroutine(DelayedCheckCombination());
+            }
+        }
+
+        // Reset the input flag after the interaction is complete
+        if (isInputProcessed && currentInteraction != InteractionType.None && !IsInteractionInProgress())
+        {
+            ResetInputProcessing();
         }
     }
 
     bool ObjectTrigger()
     {
         Collider2D collider = Physics2D.OverlapCircle(detectionPoint.position, basicDetectionRadius, detectionLayer);
-        if (collider != null)
-        {
+        return collider != null;
 
-            return true;
-        }
-        else
-        {
-
-            return false;
-        }
-        
     }
 
     void RegisterInput()
@@ -85,27 +91,25 @@ public class InteractionSystem : MonoBehaviour
 
     void CheckCombination()
     {
-        if (CheckSequence(elongateCombination))  // Add a new combination for elongation
+        if (CheckSequence(elongateCombination))  // Elongate combination
         {
             Debug.Log("Elongate Combination Triggered");
-            if (currentPlatform != null)
-            {
-                PlatformElongation elongationScript = currentPlatform.GetComponent<PlatformElongation>();
-                if (elongationScript != null)
-                {
-                    elongationScript.ElongatePlatform();
-                }
-            }
-
+            StartInteraction(InteractionType.Elongate);
         }
-        else if (CheckSequence(moveCombination))
+        else if (CheckSequence(moveCombination))  // Move combination
         {
             Debug.Log("Move Combination Triggered");
-            // Trigger platform movement
-            if (currentPlatform != null)
-            {
-                currentPlatform.StartMovement();  // Start movement for the current platform
-            }
+            StartInteraction(InteractionType.Move);
+        }
+        else if (CheckSequence(growCombination))  // Grow combination
+        {
+            Debug.Log("Grow Combination Triggered");
+            StartInteraction(InteractionType.Grow);
+        }
+        else if (CheckSequence(destroyCombination))  // Destroy combination
+        {
+            Debug.Log("Destroy Combination Triggered");
+            StartInteraction(InteractionType.Destroy);
         }
     }
 
@@ -124,7 +128,6 @@ public class InteractionSystem : MonoBehaviour
     }
     void DetectPlatform()
     {
-        // Perform a raycast to detect the platform
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, detectionLayer);
 
         if (hit.collider != null)
@@ -153,6 +156,72 @@ public class InteractionSystem : MonoBehaviour
                 currentPlatform = null;
                 inputSequence.Clear(); // Clear the input sequence
             }
+        }
+    }
+    void StartInteraction(InteractionType interaction)
+    {
+        if (isInputProcessed)
+            return;
+
+        isInputProcessed = true;
+        currentInteraction = interaction;
+
+        switch (interaction)
+        {
+            case InteractionType.Elongate:
+                PlatformElongation elongationScript = currentPlatform.GetComponent<PlatformElongation>();
+                if (elongationScript != null)
+                {
+                    elongationScript.ElongatePlatform();
+                }
+                break;
+
+            case InteractionType.Move:
+                currentPlatform.StartMovement();
+                break;
+
+            case InteractionType.Grow:
+                GrowPlatform growScript = currentPlatform.GetComponent<GrowPlatform>();
+                if (growScript != null)
+                {
+                    growScript.Grow();
+                }
+                break;
+
+            case InteractionType.Destroy:
+                // Implement your destroy logic here
+                Debug.Log("Destroy interaction logic not implemented yet.");
+                break;
+        }
+        inputSequence.Clear();
+    }
+    private IEnumerator DelayedCheckCombination()
+    {
+        yield return new WaitForSeconds(0.1f); // Small delay before checking
+        CheckCombination();
+    }
+    private void ResetInputProcessing()
+    {
+        isInputProcessed = false;
+        currentInteraction = InteractionType.None;
+        inputSequence.Clear(); // Clear input sequence for the next input
+    }
+
+    private bool IsInteractionInProgress()
+    {
+        switch (currentInteraction)
+        {
+            case InteractionType.Elongate:
+                return currentPlatform.GetComponent<PlatformElongation>()?.IsElongating ?? false;
+            case InteractionType.Move:
+                return currentPlatform.isMoving;  
+            case InteractionType.Grow:
+                return currentPlatform.GetComponent<GrowPlatform>()?.isGrowingOrShrinking ?? false;
+            case InteractionType.Destroy:
+                // Implement your destroy check logic here
+                return false;
+            default:
+                return false;
         }
     }
 }
