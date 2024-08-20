@@ -26,9 +26,9 @@ public class AutoMovingPlatform : MonoBehaviour
     {
         
 
-        transform.position = Vector2.MoveTowards(transform.position, points[goalPoint].position, moveSpeed * Time.deltaTime);
+        platform.position = Vector2.MoveTowards(platform.position, points[goalPoint].position, moveSpeed * Time.deltaTime);
 
-        if (Vector2.Distance(transform.position, points[goalPoint].position) < 0.1f)
+        if (Vector2.Distance(platform.position, points[goalPoint].position) < 0.1f)
         {
             if (goalPoint == points.Count - 1)
             {
