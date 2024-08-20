@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    // Update is called once per frame
+    //Update is called once per frame
     void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -35,14 +35,14 @@ public class PlayerMovement : MonoBehaviour
 
         if (horizontalInput > 0)
         {
-            scale.x = Mathf.Abs(scale.x);  // Ensure the player is facing right
+            scale.x = Mathf.Abs(scale.x);  
         }
         else if (horizontalInput < 0)
         {
-            scale.x = -Mathf.Abs(scale.x);  // Ensure the player is facing left
+            scale.x = -Mathf.Abs(scale.x);  
         }
 
-        transform.localScale = scale;  // Apply the new scale
+        transform.localScale = scale;  
 
         animator.SetFloat("xVelocity", Mathf.Abs(body.velocity.x));
         

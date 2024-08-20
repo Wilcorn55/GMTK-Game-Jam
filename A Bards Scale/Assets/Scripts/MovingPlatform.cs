@@ -10,7 +10,7 @@ public class MovingPlatform : MonoBehaviour
     int goalPoint = 0;
     public float moveSpeed = 2f;
 
-    private bool shouldMove = false; // Flag to control when the platform should move
+    private bool shouldMove = false; //control when the platform should move
 
     public bool isMoving
     {
@@ -19,7 +19,7 @@ public class MovingPlatform : MonoBehaviour
 
 
 
-    // Update is called once per frame
+    //Update is called once per frame
     void Update()
     {
 

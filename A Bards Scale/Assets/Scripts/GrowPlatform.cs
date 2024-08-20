@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class GrowPlatform : MonoBehaviour
 {
-    public float growthIncrement = 0.5f; // Total growth increment in each direction
-    public float growthDuration = 2f;    // Duration over which the growth happens
-    public float maxScale = 2.5f;        // Maximum allowed scale to prevent excessive growth
-    public float shrinkDelay = 5f;       // Time before the platform shrinks back
-    public float closeEnoughThreshold = 0.001f; // Threshold to snap to the final scale
+    public float growthIncrement = 0.5f; 
+    public float growthDuration = 2f;    
+    public float maxScale = 2.5f;        
+    public float shrinkDelay = 5f;    
+    public float closeEnoughThreshold = 0.001f; 
 
-    private Vector3 initialScale;        // To store the original scale of the platform
+    private Vector3 initialScale;       
     private Coroutine growthCoroutine;
 
-    private bool isGrowingOrShrinking = false;  // Flag to track if growth/shrink is in progress
+    private bool isGrowingOrShrinking = false;  
 
     public bool IsGrowingOrShrinking
     {
@@ -22,21 +22,21 @@ public class GrowPlatform : MonoBehaviour
 
     void Start()
     {
-        // Store the initial scale at the start
+        //Store the scale
         initialScale = transform.localScale;
     }
 
-    // Method to start the gradual growth of the platform
+    
     public void Grow()
     {
-        // If a growth or shrink process is already ongoing, don't start another
+        
         if (isGrowingOrShrinking)
             return;
 
-        // Set the flag to indicate that a growth/shrink process is in progress
+        
         isGrowingOrShrinking = true;
 
-        // Start the growth coroutine
+        
         growthCoroutine = StartCoroutine(GrowAndShrinkOverTime());
     }
 

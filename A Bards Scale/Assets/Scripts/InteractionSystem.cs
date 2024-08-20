@@ -18,7 +18,7 @@ public class InteractionSystem : MonoBehaviour
     private float inputTimeout = 2f;
     private float inputTimer;
 
-    // Reference to the MovingPlatform script
+    
     private MovingPlatform currentPlatform;
     public GrowPlatform growPlatform;
 
@@ -39,7 +39,7 @@ public class InteractionSystem : MonoBehaviour
             }
         }
 
-        // Reset the input flag after the interaction is complete
+        //Reset the input
         if (isInputProcessed && currentInteraction != InteractionType.None && !IsInteractionInProgress())
         {
             ResetInputProcessing();
@@ -55,7 +55,7 @@ public class InteractionSystem : MonoBehaviour
 
     void RegisterInput()
     {
-        // Check for arrow key presses
+        //Check for arrow key presses
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             inputSequence.Enqueue(KeyCode.LeftArrow);
@@ -76,13 +76,13 @@ public class InteractionSystem : MonoBehaviour
 
         }
 
-        // Reset the timer whenever a new key is pressed
+        //Reset the timer 
         if (inputSequence.Count > 0)
         {
             inputTimer = inputTimeout;
         }
 
-        // Limit the size of the queue to the longest combination
+        
         if (inputSequence.Count > elongateCombination.Length)
         {
             inputSequence.Dequeue();
@@ -91,22 +91,22 @@ public class InteractionSystem : MonoBehaviour
 
     void CheckCombination()
     {
-        if (CheckSequence(elongateCombination))  // Elongate combination
+        if (CheckSequence(elongateCombination))  //Elongate combination
         {
             Debug.Log("Elongate Combination Triggered");
             StartInteraction(InteractionType.Elongate);
         }
-        else if (CheckSequence(moveCombination))  // Move combination
+        else if (CheckSequence(moveCombination))  //Move combination
         {
             Debug.Log("Move Combination Triggered");
             StartInteraction(InteractionType.Move);
         }
-        else if (CheckSequence(growCombination))  // Grow combination
+        else if (CheckSequence(growCombination))  //Grow combination
         {
             Debug.Log("Grow Combination Triggered");
             StartInteraction(InteractionType.Grow);
         }
-        else if (CheckSequence(destroyCombination))  // Destroy combination
+        else if (CheckSequence(destroyCombination))  //Destroy combination
         {
             Debug.Log("Destroy Combination Triggered");
             StartInteraction(InteractionType.Destroy);
@@ -136,25 +136,25 @@ public class InteractionSystem : MonoBehaviour
 
             if (detectedPlatform != null && detectedPlatform != currentPlatform)
             {
-                // Stop the movement of the previous platform
+                //Stop the movement 
                 if (currentPlatform != null)
                 {
                     currentPlatform.StopMovement();
                 }
 
-                // Set the new current platform and clear the input sequence
+                //Set the new current platform
                 currentPlatform = detectedPlatform;
-                inputSequence.Clear(); // Clear the input sequence
+                inputSequence.Clear(); //Clear the input 
             }
         }
         else
         {
-            // Stop the movement if no platform is detected
+            
             if (currentPlatform != null)
             {
                 currentPlatform.StopMovement();
                 currentPlatform = null;
-                inputSequence.Clear(); // Clear the input sequence
+                inputSequence.Clear();
             }
         }
     }
@@ -189,7 +189,7 @@ public class InteractionSystem : MonoBehaviour
                 break;
 
             case InteractionType.Destroy:
-                // Implement your destroy logic here
+                //destroy logic here
                 Debug.Log("Destroy interaction logic not implemented yet.");
                 break;
         }
@@ -197,14 +197,14 @@ public class InteractionSystem : MonoBehaviour
     }
     private IEnumerator DelayedCheckCombination()
     {
-        yield return new WaitForSeconds(0.1f); // Small delay before checking
+        yield return new WaitForSeconds(0.1f);
         CheckCombination();
     }
     private void ResetInputProcessing()
     {
         isInputProcessed = false;
         currentInteraction = InteractionType.None;
-        inputSequence.Clear(); // Clear input sequence for the next input
+        inputSequence.Clear(); 
     }
 
     private bool IsInteractionInProgress()
@@ -218,7 +218,7 @@ public class InteractionSystem : MonoBehaviour
             case InteractionType.Grow:
                 return currentPlatform.GetComponent<GrowPlatform>()?.IsGrowingOrShrinking ?? false;
             case InteractionType.Destroy:
-                // Implement your destroy check logic here
+                //destroy check logic here
                 return false;
             default:
                 return false;

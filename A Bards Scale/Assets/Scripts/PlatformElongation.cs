@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class PlatformElongation : MonoBehaviour
 {
-    public GameObject platformPrefab;  // Prefab of the platform to be cloned
-    public int maxSegments = 5;        // Maximum number of segments to add on each side
-    public float segmentWidth = 1f;    // Width of each platform segment
-    public float moveDuration = 0.5f;  // Time it takes for the platform to move to its final position
+    public GameObject platformPrefab;  
+    public int maxSegments = 5;        
+    public float segmentWidth = 1f;   
+    public float moveDuration = 0.5f;  
 
-    private int currentSegments = 0;   // Tracks how many segments have been added on each side
+    private int currentSegments = 0;  
 
-    private bool isElongating = false; // Flag to indicate if elongation is in progress
+    private bool isElongating = false; 
 
     public bool IsElongating
     {
@@ -21,9 +21,9 @@ public class PlatformElongation : MonoBehaviour
     {
         if (currentSegments < maxSegments && !isElongating)
         {
-            isElongating = true; // Set the flag when elongation starts
+            isElongating = true; //Set when elongation starts
 
-            // Start the elongation process for both sides
+            //Start the elongation
             StartCoroutine(ElongateBothSides());
         }
     }
@@ -33,11 +33,11 @@ public class PlatformElongation : MonoBehaviour
         GameObject newSegment = Instantiate(platformPrefab, initialPosition, transform.rotation);
         newSegment.transform.SetParent(transform.parent);
 
-        // Adjust the scale to match the original exactly
+        //Adjust the scale
         Vector3 originalScale = transform.Find("Platform").localScale;
         newSegment.transform.localScale = originalScale;
 
-        // Adjust the order in layer to be behind the original
+        //adjust the order in layer
         SpriteRenderer newSegmentRenderer = newSegment.GetComponent<SpriteRenderer>();
         SpriteRenderer originalRenderer = transform.Find("Platform").GetComponent<SpriteRenderer>();
 
@@ -46,7 +46,7 @@ public class PlatformElongation : MonoBehaviour
             newSegmentRenderer.sortingOrder = originalRenderer.sortingOrder - 1;
         }
 
-        // Adjust position based on potential pivot differences
+      
         float yOffset = originalRenderer.bounds.extents.y - newSegmentRenderer.bounds.extents.y;
         initialPosition.y -= yOffset;
         targetPosition.y -= yOffset;
@@ -64,20 +64,20 @@ public class PlatformElongation : MonoBehaviour
     }
     private IEnumerator ElongateBothSides()
     {
-        // Spawn and move the right segment
+        
         Vector3 initialPositionRight = transform.position;
         Vector3 targetPositionRight = new Vector3(transform.position.x + segmentWidth * (currentSegments + 1), transform.position.y, transform.position.z);
         yield return StartCoroutine(MovePlatformSegment(initialPositionRight, targetPositionRight));
 
-        // Spawn and move the left segment
+        
         Vector3 initialPositionLeft = transform.position;
         Vector3 targetPositionLeft = new Vector3(transform.position.x - segmentWidth * (currentSegments + 1), transform.position.y, transform.position.z);
         yield return StartCoroutine(MovePlatformSegment(initialPositionLeft, targetPositionLeft));
 
-        // Increment the segment count after elongation is complete
+       
         currentSegments++;
 
-        // Clear the flag when elongation is done
+        // Clear
         isElongating = false;
     }
 }
