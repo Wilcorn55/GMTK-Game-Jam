@@ -31,7 +31,25 @@ public class PlatformElongation : MonoBehaviour
     private IEnumerator MovePlatformSegment(Vector3 initialPosition, Vector3 targetPosition)
     {
         GameObject newSegment = Instantiate(platformPrefab, initialPosition, transform.rotation);
-        newSegment.transform.SetParent(transform.parent); // Set the same parent as the original platform
+        newSegment.transform.SetParent(transform.parent);
+
+        // Adjust the scale to match the original exactly
+        Vector3 originalScale = transform.Find("Platform").localScale;
+        newSegment.transform.localScale = originalScale;
+
+        // Adjust the order in layer to be behind the original
+        SpriteRenderer newSegmentRenderer = newSegment.GetComponent<SpriteRenderer>();
+        SpriteRenderer originalRenderer = transform.Find("Platform").GetComponent<SpriteRenderer>();
+
+        if (newSegmentRenderer != null && originalRenderer != null)
+        {
+            newSegmentRenderer.sortingOrder = originalRenderer.sortingOrder - 1;
+        }
+
+        // Adjust position based on potential pivot differences
+        float yOffset = originalRenderer.bounds.extents.y - newSegmentRenderer.bounds.extents.y;
+        initialPosition.y -= yOffset;
+        targetPosition.y -= yOffset;
 
         float elapsedTime = 0;
 
@@ -42,7 +60,6 @@ public class PlatformElongation : MonoBehaviour
             yield return null;
         }
 
-        // Ensure the final position is exactly the target position
         newSegment.transform.position = targetPosition;
     }
     private IEnumerator ElongateBothSides()
